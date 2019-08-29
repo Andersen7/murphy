@@ -1,0 +1,21 @@
+server:
+  port: 18500
+  servlet:
+    context-path: /example
+    session:
+      timeout: 360000
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://120.55.160.100:3306/murphy?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: 123456
+
+mybatis:
+  mapper-locations: classpath:top.lishaobo.example.dao/mapper/*.xml
+  type-aliases-package: top.lishaobo.example.entity
+
+
+
+

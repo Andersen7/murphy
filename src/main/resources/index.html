@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<link href="res/bootstrap.css" rel="stylesheet" />
+	<meta charset="utf-8">
+	<script type="text/javascript" src="res/jquery-2.1.0.js"></script>
+	<script language="JavaScript">
+        var methods = {
+            "管理员" : {},
+            "user/registerAdmin.do" : {
+                "Data" : '{"userName": "","pwd": ""}',
+                "说明" : "注册管理员"
+            },
+			"dome/addDome.do" : {
+				"Data" : '{"name": ""}',
+				"说明" : "addDome"
+			},
+			"dome/deleteDome.do" : {
+				"Data" : '{"domeId": ""}',
+				"说明" : "deleteDome"
+			},
+			"dome/updateDome.do" : {
+				"Data" : '{"domeId": "","domeName":""}',
+				"说明" : "deleteDome"
+			},
+			"dome/findDomePage.do" : {
+				"Data" : '{"name": "","pageIndex":"1","pageSize":"10"}',
+				"说明" : "findDomePage"
+			},
+			"dome/findDomeSpecification.do" : {
+				"Data" : '{"name": "","pageIndex":"1","pageSize":"10"}',
+				"说明" : "findDomeSpecification"
+			},
+			"dome/findDomeSql.do" : {
+				"Data" : '{}',
+				"说明" : "findDomeSql"
+			}
+        };
+
+        $(document).ready(
+            function() {
+                var i = 0;
+                for ( var m in methods) {
+                    i++;
+                    var option = $("<option></option>");
+                    option.val(m);
+                    option.text(m);
+                    $("#postAPI").append(option);
+
+                    var params = methods[m];
+                    var row = "<tr><td class='item' id='"+i+"'><a href='#'>"
+                        + m + "</a></td>";
+                    if (params["说明"] != null) {
+                        row += "<td>" + params["说明"] + "</td>";
+                    } else {
+                        row += "<td>" + "" + "</td>";
+                    }
+
+                    /*
+                    if (params["备注"] != null)
+                    {
+                        row += "<td>" + params["备注"] + "</td>";
+                    }
+                    else
+                    {
+                        row += "<td>" + "" + "</td>";
+                    }
+                     */
+
+                    row += "</tr>";
+                    $("#apiDesc tr:last").after(row);
+                }
+                $(".item").click(function() {
+                    var a = $(this).text();
+                    $("#postAPI").val(a);
+                    tronClick(a);
+                });
+            })
+
+        function checkAction() {
+            // $("#form").attr("action", "/" + $("#postAPI").val());
+            $("#form").attr("action", "/fanDeng/" + $("#postAPI").val());
+            $("#submit").submit();
+        }
+
+        function onSelectionChange() {
+            $("#inputs").empty();
+
+            onSelectMethod($("#postAPI").val());
+        }
+
+        function tronClick(val) {
+            $("#inputs").empty();
+
+            onSelectMethod(val);
+        }
+
+        function onSelectMethod(method) {
+            var params = methods[method];
+            var hasFile = false;
+            var useGet = false;
+            for ( var p in params) {
+                var input = $("<input></input>");
+                if (typeof (params[p]) == "object") {
+                    // 是对象，则其中必然有类型：type
+                    if (params[p]["type"] == "file") {
+                        input.attr("type", "file");
+                        input.attr("name", p);
+                        input.text(p);
+                        $("#inputs").append(p + ": ");
+                        $("#inputs").append(input);
+                        $("#inputs").append("<br/>");
+
+                        hasFile = true;
+                    } else if (params[p]["type"] == "multiFile") {
+                        input.attr("type", "file");
+                        input.attr("name", p);
+                        input.attr("multiple", "multiple");
+                        input.text(p);
+                        $("#inputs").append(p + ": ");
+                        $("#inputs").append(input);
+                        $("#inputs").append("<br/>");
+
+                        hasFile = true;
+                    } else {
+                        alert("Type not implemented: " + "param: " + p + ", Type: "
+                            + params[p]["type"]);
+                    }
+                } else if (p == "备注") {
+                    var label = $("<label></label>");
+                    label.text(params[p]);
+                    $("#inputs").append(label);
+                } else if (p == "说明") {
+
+                } else if (p == "GET") {
+                    if (params[p] == 1) {
+                        useGet = true;
+                    }
+                } else {
+                    input.attr("type", "text");
+                    input.attr("name", p);
+                    input.attr("style", "width: 1500px");
+                    input.text(p);
+                    input.val(params[p]);
+                    $("#inputs").append(p + ": ");
+                    $("#inputs").append(input);
+                    $("#inputs").append("<br/>");
+                }
+            }
+
+            // 如果有文件，则需要修改为post
+            if (hasFile) {
+                $("#form").attr("method", "post");
+            } else {
+                if (useGet) {
+                    $("#form").attr("method", "get");
+                } else {
+                    $("#form").attr("method", "post");
+                }
+            }
+        }
+	</script>
+	<style>
+		.item {
+			cursor: pointer;
+		}
+
+		a {
+			text-decoration: none;
+			color: #000;
+		}
+	</style>
+</head>
+<body>
+<div style="padding: 0px 10px">
+	<?php echo md5(uniqid())?>
+	<br />
+	<p>输入Post的API</p>
+	<select id="postAPI" style="width: 300px"
+			onchange="onSelectionChange()" class="form-control">
+		<option value="">请选择</option>
+	</select> <br />
+	<p>输入参数</p>
+	<form id="form" action="" method="get"
+		  enctype="application/x-www-form-urlencoded;charset=UTF-8"
+		  accept-charset="UTF-8">
+		<div id="inputs"></div>
+		<input id="submit" type="submit" value="提交" onclick="checkAction()"
+			   class="btn btn-info" />
+	</form>
+	<br />
+	<table id="apiDesc" border="1" class="table">
+		<tr>
+			<th width="100px">API</th>
+			<th width="100px">说明</th>
+			<!--            <th width="200px">备注</th>-->
+
+		</tr>
+
+	</table>
+
+</div>
+
+</body>
+</html>

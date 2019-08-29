@@ -13,8 +13,8 @@ spring:
     password: 123456
 
 mybatis:
-  mapper-locations: classpath:top.lishaobo.example.dao/mapper/*.xml
-  type-aliases-package: top.lishaobo.example.entity
+  mapper-locations: classpath:/top/lishaobo/example/dao/mapper/*.xml
+  type-aliases-package: top.lishaobo.example.dao
 
 
 
